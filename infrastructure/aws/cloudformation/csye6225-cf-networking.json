@@ -1,0 +1,14 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+        "S3B284LT": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7f82c217-e26c-4864-a01f-685556031ac8"
+                }
+            }
+        }
+    }
+}
