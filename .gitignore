@@ -1,1 +1,3 @@
 WebApp/node_modules
+WebApp/.vscode
+WebApp/package-lock.json
