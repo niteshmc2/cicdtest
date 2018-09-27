@@ -20,17 +20,37 @@ db.connect((err)=> {
     console.log("Connedted to db");
 });
 
+app.route('/').get(function (req, res) {
+    res.send('Basic auth app')
+});
+
 app.route('/time').get(verify, (req,res)=>{
-    console.log(req.query);
-    let sql = `SELECT * FROM users WHERE userid = ${req.params.username}`;
+    var auth = req.headers['authorization'];
+    var tmp = auth.split(' ');   
+    var buf = new Buffer(tmp[1], 'base64');
+    var plain_auth = buf.toString();
+    console.log("Decoded Authorization ", plain_auth);
+
+    var creds = plain_auth.split(':');
+    var username = creds[0];
+    var password = creds[1];
+
+    console.log(username);
+    let sql = `SELECT * FROM users WHERE userid = "${username}"`;
+    console.log(sql);
     db.query(sql, (err, result)=>{
         if(err) {
             console.log("User not found");
-            return;
+            console.log(err);
+            //return;
+            res.error.send("User not found, Please register");
         }
-        console.log(result);
-        if (bcrypt.compareSync(req.body.password, result.password)) {
-            res.status(200).send("Logged in "+Date.now());
+        if (result.length == 0){
+            res.status(400).json({ error: "User not found" });
+        } 
+        else if (bcrypt.compareSync(password, result[0].password)) {
+            var d = new Date(2018, 11, 24, 10, 33, 30);
+            res.status(200).send("Logged in at "+d);
             // res.status(200).json(thisguy);
         } else {
             res.status(400).json({ error: "incorrect password" });
