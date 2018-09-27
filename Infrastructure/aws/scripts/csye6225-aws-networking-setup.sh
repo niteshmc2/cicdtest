@@ -13,13 +13,15 @@ then
 	exit 1
 fi
 echo "Subnet1 created"
+aws ec2 create-tags --resources $SUB1_ID --tags Key=Name,Value=CLOUD_STACK-csye6225-sub1
 SUB2_ID=`aws ec2 create-subnet --availability-zone us-east-1a --cidr-block 10.0.1.0/24 --vpc-id $VPC_ID | jq '.Subnet.SubnetId' | tr -d '"'`
 if [ -z "$SUB2_ID" ]
 then
 	echo "Error occurred, exiting!"
 	exit 1
-fi
+fi	
 echo "Subnet2 created"
+aws ec2 create-tags --resources $SUB2_ID --tags Key=Name,Value=CLOUD_STACK-csye6225-sub2
 SUB3_ID=`aws ec2 create-subnet --availability-zone us-east-1b --cidr-block 10.0.0.0/24 --vpc-id $VPC_ID | jq '.Subnet.SubnetId' | tr -d '"'`
 if [ -z "$SUB3_ID" ]
 then
@@ -27,6 +29,7 @@ then
 	exit 1
 fi
 echo "Subnet3 created"
+aws ec2 create-tags --resources $SUB3_ID --tags Key=Name,Value=CLOUD_STACK-csye6225-sub3
 IG_ID=`aws ec2 create-internet-gateway | jq '.InternetGateway.InternetGatewayId' | tr -d '"'`
 if [ -z "$IG_ID" ]
 then
