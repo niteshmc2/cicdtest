@@ -14,7 +14,7 @@
 	     "VPC" :{
    	     "Type" : "AWS::EC2::VPC",
    	     "Properties" : {
-        		"CidrBlock" : "10.0.2.0/24",
+        		"CidrBlock" : "10.0.0.0/16",
         		"EnableDnsSupport" : false,
         		"EnableDnsHostnames" : false,
         		"InstanceTenancy" : "default",
@@ -44,12 +44,57 @@
     },
     "Route" : {
            "Type" : "AWS::EC2::Route",
-           "DependsOn" : "GatewayToInternet",
+           "DependsOn" : "InternetGateway",
            "Properties" : {
               "RouteTableId" : { "Ref" : "RouteTable" },
               "DestinationCidrBlock" : "0.0.0.0/0",
               "GatewayId" : { "Ref" : "InternetGateway" }
            }
+    },
+    "Subnet1":{
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+          "AvailabilityZone" : "us-east-1a",
+          "CidrBlock" : "10.0.1.0/24",
+          "Tags" : [ { "Key" : "Name", "Value" : "CLOUD_STACK-csye6225-Subnet1" } ],
+          "VpcId" : {"Ref":"VPC"}
+        }
+    },
+    "Subnet2":{
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+          "AvailabilityZone" : "us-east-1b",
+          "CidrBlock" : "10.0.2.0/24",
+          "Tags" : [ { "Key" : "Name", "Value" : "CLOUD_STACK-csye6225-Subnet2" } ],
+          "VpcId" : {"Ref":"VPC"}
+        }
+    },
+    "Subnet3":{
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+          "AvailabilityZone" : "us-east-1c",
+          "CidrBlock" : "10.0.0.0/24",
+          "Tags" : [ { "Key" : "Name", "Value" : "CLOUD_STACK-csye6225-Subnet3" } ],
+          "VpcId" : {"Ref":"VPC"}
+        }
     }
+  },
+"Outputs" : {
+  "StackVPC" : {
+    "Description" : "The ID of the VPC",
+    "Value" : { "Ref" : "VPC" }
+  },
+  "StackSubnet1" : {
+    "Description" : "The ID of the Subnet1",
+    "Value" : { "Ref" : "Subnet1" }
+  },
+  "StackSubnet2" : {
+    "Description" : "The ID of the Subnet2",
+    "Value" : { "Ref" : "Subnet2" }
+  },
+  "StackSubnet3" : {
+    "Description" : "The ID of the Subnet3",
+    "Value" : { "Ref" : "Subnet3" }
   }
+ }
 }
