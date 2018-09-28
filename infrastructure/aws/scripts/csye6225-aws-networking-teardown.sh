@@ -93,3 +93,4 @@ echo $6
 aws ec2 delete-vpc --vpc-id $VPC_ID
 
 echo "VPC deleted"
+
