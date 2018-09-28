@@ -1,4 +1,3 @@
-
 echo $1
 
 RT_ID=`aws ec2 describe-route-tables --filters "Name=tag:Name, Values=$1" | jq '.RouteTables[0].RouteTableId' | tr -d '"' `
