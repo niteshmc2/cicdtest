@@ -1,8 +1,8 @@
 'use strict';
 
 const userService = require('../services/user-service'),
-        bcrypt = require('bcryptjs');
-
+        bcrypt = require('bcryptjs'),
+        validator = require("email-validator");
 
 exports.register = function (req, res){
     var username = req.body.username;
@@ -10,21 +10,21 @@ exports.register = function (req, res){
     userService.search(username, (result) => {
         console.log(result);
         if (result) {
-                req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync());
-            if (req.body.username == null || req.body.password == null){
-                res.status(400).json({sc:400,status:"Bad request"});
+            req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync());
+            if (req.body.username == null || req.body.password == null || !validator.validate(username)){
+                res.status(400).json({sc:400,status:"Bad request - username should be an email - password should not be empty"});
                 return;
             }
-                let user = { userid: req.body.username, password: req.body.password };
-                userService.insert(user, (err)=>{
-                    if (err) {
-                        console.log(err);
-                        res.status(400).json({sc:400,status:"User already exists"});
-                    } else {
-                        console.log('new user added');
-                        res.status(201).json({sc:201,status:"User added successfully"});
-                    }
-                });
+            let user = { userid: req.body.username, password: req.body.password };
+            userService.insert(user, (err)=>{
+                if (err) {
+                    console.log(err);
+                    res.status(400).json({sc:400,status:"User already exists"});
+                } else {
+                    console.log('new user added');
+                    res.status(201).json({sc:201,status:"User added successfully"});
+                }
+            });
         } else if (result == false) {
             console.log(err);
             res.error.send("DB error");
