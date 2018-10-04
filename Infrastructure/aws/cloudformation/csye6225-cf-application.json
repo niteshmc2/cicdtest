@@ -1,0 +1,101 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Application Stack for CSYE 6225 - Fall 2018",
+    "Parameters" : {
+        "NetworkStackNameParameter" : {
+          "Description" : "Network Stack Name",
+          "Type" : "String"
+        },
+        "ApplicationStackNameParameter" : {
+          "Description" : "Application Stack Name",
+          "Type" : "String"
+        }
+    },
+    "Resources": {
+        "EC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-9887c6e7",
+                "AvailabilityZone": "us-east-1a",
+                "InstanceType": "t2.micro",
+                "SubnetId":{"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetID"}},
+                "SecurityGroupIds": [{ "Ref" : "WebServerSecurityGroup" }],
+		            "DisableApiTermination": "false",
+		            "BlockDeviceMappings" : [
+                {
+                "DeviceName" : "/dev/sda1",
+                "Ebs" : {
+                          "DeleteOnTermination": true,
+                          "VolumeSize": 20,
+                          "VolumeType": "gp2"
+                        }
+                }
+              ],
+              "Tags" : [{ "Key":"Name","Value":"${ApplicationStackNameParameter}-csye6225-EC2Instance"}]
+            }
+        },
+         "WebServerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+		         "GroupName" : "csye6225-webapp",
+             "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22, HTTPS access via port 443",
+             "VpcId":{"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}},
+             "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+					          {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags" : [{ "Key":"Name","Value":"${ApplicationStackNameParameter}-csye6225-WebAppSecurityGroup"}]
+            }
+        },
+        "DBServerSecurityGroup":{
+              "Type": "AWS::EC2::SecurityGroup",
+              "Properties": {
+                  "GroupName": "csye6225-rds",
+                  "GroupDescription": "allow TCP traffic on port 3306 for MySQL",
+                  "VpcId": {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}},
+                  "SecurityGroupIngress": [
+                      {
+                          "IpProtocol": "tcp",
+                          "FromPort": 3306,
+                          "ToPort": 3306,
+                          "SourceSecurityGroupId": {"Ref": "WebServerSecurityGroup"}
+                      }
+                  ],
+                  "Tags" : [ { "Key" : "Name", "Value" : "${ApplicationStackNameParameter}-csye6225-WebAppSecurityGroup" } ]
+              }
+          }
+    },
+    "Outputs" : {
+      "EC2Instance" : {
+        "Description" : "The EC2 Instance for Web Server",
+        "Value" : { "Ref" : "EC2Instance" },
+        "Export": {"Name":{"Fn::Sub":"${AWS::StackName}-EC2InstanceID"}}
+      },
+      "WebServerSecurityGroup" : {
+        "Description" : "The security group id for the Web Server",
+        "Value" : { "Ref" : "WebServerSecurityGroup" },
+        "Export": {"Name":{"Fn::Sub":"${AWS::StackName}-WebServerSecurityGroupID"}}
+      },
+      "DBServerSecurityGroup" : {
+        "Description" : "The security group id for the RDS Server",
+        "Value" : { "Ref" : "DBServerSecurityGroup" },
+        "Export": {"Name":{"Fn::Sub":"${AWS::StackName}-DBServerSecurityGroupID"}}
+      }
+    }
+}
