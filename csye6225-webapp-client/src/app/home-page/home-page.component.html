@@ -1,0 +1,14 @@
+<div class="container-fluid">
+  <h1>Cloud Course Webservice</h1>
+  <div class="nav-buttons" *ngIf="!logged ">
+    <a class="btn btn-primary" routerLink="/login">&nbsp;Login</a>
+    <a class="btn btn-success margin" routerLink="/register">&nbsp;Register</a>
+  </div>
+
+  <div class="nav-buttons" *ngIf="logged ">
+    <a class="btn btn-dark margin" routerLink="/profile">&nbsp;Profile</a>
+    <a class="btn btn-danger" (click)="logout()">&nbsp;Logout</a>
+    <a class="btn btn-primary" routerLink="/quizzes">&nbsp;Quiz</a>
+  </div>
+
+</div>
