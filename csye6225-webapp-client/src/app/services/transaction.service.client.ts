@@ -1,24 +1,26 @@
 export class TransactionServiceClient {
 
-  URL = 'http://localhost:4200';
+  URL = 'http://localhost:3001';
 
-  createTransaction = (transaction) =>
+  createTransaction = (transaction, auth) =>
     fetch(this.URL + '/transaction', {
       method: 'post',
       credentials: 'include',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        'Authorization': 'Basic ' + auth
       },
       body: JSON.stringify(transaction)
     })
       .then(response => response.json())
 
-  findTransactionsForUser = () =>
+  findTransactionsForUser = (auth) =>
     fetch(this.URL  + '/transaction', {
       method: 'get',
       credentials: 'include',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        'Authorization': 'Basic ' + auth
       }
     })
       .then(response => response.json())
@@ -30,7 +32,8 @@ export class TransactionServiceClient {
       body: JSON.stringify(newTransaction),
       credentials: 'include',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        'Authorization': 'Basic '
       },
     })
       .then(response => response.json());
@@ -39,7 +42,10 @@ export class TransactionServiceClient {
   deleteTransaction(transactionId) {
     return fetch(this.URL  + '/transaction/' + transactionId, {
       method: 'delete',
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Authorization': 'Basic '
+      }
     });
   }
 
