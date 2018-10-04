@@ -24,9 +24,14 @@ export class LoginComponent implements OnInit {
     this.password = password;
     this.service
       .login(username, password)
-      .then(() => this.router.navigate(['transactions']), () => alert('Enter Correct credentials'));
+      .then(res => {
+          if (res.status === 'success') {
+            alert(res.login);
+            this.router.navigate(['transactions']);
+          } else {
+            alert('Enter Correct Credentials');
+          }
+      });
     //   .then(() => this.check_login(this.credentials));
-    alert('login pressed');
-
   }
 }
