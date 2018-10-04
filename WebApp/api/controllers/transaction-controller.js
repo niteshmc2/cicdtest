@@ -13,7 +13,7 @@ exports.list = function(req, res){
     transactionService.list(userid, (err, result) => {
         if(err){
             console.log(err);
-            res.status(400).send("DB err");
+            res.status(400).json({sc:400,status:"DB err"});
         }
         res.status(200).json(result);
     })
@@ -47,63 +47,63 @@ exports.add = function(req, res){
 
 exports.update = function(req, res){
     var auth = req.headers['authorization'];
-    var tmp = auth.split(' ');
-    var buf = new Buffer(tmp[1], 'base64');
-    var plain_auth = buf.toString();
-    var creds = plain_auth.split(':');
-    var userid = creds[0];
-    console.log("the request id sent is "+req.params['id']);
-    transactionService.search(req.params['id'], (err, result)=>{
-        if (err) {
-            console.log(err);
-            res.status(400).send("Bad request");
-        }
-        if (result.length == 0) {
-            res.status(400).send("Bad request");
-            return;
-        }
-        if (result[0].userid === userid) {
+    // var tmp = auth.split(' ');
+    // var buf = new Buffer(tmp[1], 'base64');
+    // var plain_auth = buf.toString();
+    // var creds = plain_auth.split(':');
+    // var userid = creds[0];
+    // console.log("the request id sent is "+req.params['id']);
+    // transactionService.search(req.params['id'], (err, result)=>{
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(400).send("Bad request");
+    //     }
+    //     if (result.length == 0) {
+    //         res.status(400).send("Bad request");
+    //         return;
+    //     }
+    //     if (result[0].userid === userid) {
             let updatedTr = req.body;
             transactionService.update(req.params.id, updatedTr, (err, result)=>{
                 if(err){
                     console.log(err);
-                    res.status(400).send("Bad request");
+                    res.status(400).json({sc:400, status:"Bad request"});
                     return;
                 }
-                res.status(201).send("Created/Updated");
+                res.status(201).json({sc:201, status:"Created/Updated"});
             })
-        } else 
-             res.status(401).send("Unauthorized");
-    })
+    //     } else
+    //          res.status(401).send("Unauthorized");
+    // })
 
 }
 
 exports.delete = function(req, res){
     var auth = req.headers['authorization'];
-    var tmp = auth.split(' ');
-    var buf = new Buffer(tmp[1], 'base64');
-    var plain_auth = buf.toString();
-    var creds = plain_auth.split(':');
-    var userid = creds[0];
+    // var tmp = auth.split(' ');
+    // var buf = new Buffer(tmp[1], 'base64');
+    // var plain_auth = buf.toString();
+    // var creds = plain_auth.split(':');
+    // var userid = creds[0];
 
-    transactionService.search(req.params['id'], (err, result) => {
-        if (err) {
-            console.log(err);
-            res.status(400).send("Bad request");
-        }
-        if(result.length == 0){
-            res.status(400).send("Bad request");
-            return;
-        }
-        if (result[0].userid === userid) {
+    // transactionService.search(req.params['id'], (err, result) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(400).send("Bad request");
+    //     }
+    //     if(result.length == 0){
+    //         res.status(400).send("Bad request");
+    //         return;
+    //     }
+    //     if (result[0].userid === userid) {
             transactionService.delete(req.params['id'], (err, result) => {
                 if (err) {
                     console.log(err);
                     res.status(400).send("Bad request");
                 }
-                res.status(204).send("No content");
+                res.status(204).json({sc:204,status:"No content"});
             })
-        } else
-            res.status(401).send("Unauthorized");
-    })
+    //     } else
+    //         res.status(401).send("Unauthorized");
+    // })
 }

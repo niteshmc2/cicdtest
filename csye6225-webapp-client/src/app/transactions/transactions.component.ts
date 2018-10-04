@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {TransactionServiceClient} from '../services/transaction.service.client';
+import {UserServiceClient} from '../services/user.service.client';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-transactions',
@@ -7,6 +10,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TransactionsComponent implements OnInit {
 
+  auth = '';
   id;
   description;
   merchant;
@@ -16,56 +20,102 @@ export class TransactionsComponent implements OnInit {
   category;
   transactions = [];
 
-  constructor() { }
+  constructor(private service: TransactionServiceClient,
+              private userService: UserServiceClient,
+              private router: Router,) {
+     if (this.userService.auth === undefined)
+     {
+
+     } else {
+     this.auth = this.userService.auth;
+     this.loadTransactions();}
+  }
 
   createTransaction() {
-    alert('create');
-    // this
-    //   .service
-    //   .createTransaction(this.courseId, sectionName, maxSeats)
-    //   .then(() => {
-    //     this.loadSections(this.courseId);
-    //   }).then(() => {this.sectionName = "";
-    //   this.maxSeats = ""; this.seats = "";});
+    const transaction = {
+      "description": this.description,
+      "merchant": this.merchant,
+      "amount": this.amount,
+      "date": this.date,
+      "category": this.category
+    }
+    this
+      .service
+      .createTransaction(transaction, this.userService.auth)
+      .then(() => {
+        // this.loadTransactions();
+      });
+  }
+
+  loadTransactions() {
+    // alert('Load' + this.auth);
+    this
+      .service
+      .findTransactionsForUser(this.auth)
+      .then(res => {
+            this.transactions = res;
+            console.log(this.transactions);
+      }).then(() => { });
   }
 
   updateTransaction() {
-    alert('update');
+    // alert('update');
     // const newRem = newSeats - this.selectedSection.maxSeats + this.selectedSection.seats;
-    // this
-    //   .service
-    //   .updateTransaction(this.selectedSection._id, newName, newSeats, newRem)
-    //   .then(() => {
-    //     this.loadSections(this.courseId);
-    //   }).then(() => {this.sectionName="";
-    //   this.maxSeats="";  this.seats = ""; });
+    const newTransaction = {
+      "description": this.description,
+      "merchant": this.merchant,
+      "amount": this.amount,
+      "date": this.date,
+      "category": this.category
+    };
+
+    this
+      .service
+      .updateTransaction(this.id, newTransaction)
+      .then(() => {
+        // this.loadTransactions();
+      }).then(() => { });
   }
 
-  deleteTransaction(sectionId) {
-    // this
-    //   .service
-    //   .deleteTransaction(sectionId)
-    //   .then(() => {
-    //     this.loadSections(this.courseId);
-    //   });
+  deleteTransaction(transactionId) {
+    this
+      .service
+      .deleteTransaction(transactionId)
+      .then(() => {
+        // this.loadTransactions();
+      });
   }
 
-  editTransaction(section) {
+  editTransaction(transaction) {
     // this.sectionName = section.name;
     // this.maxSeats = section.maxSeats;
     // this.seats = section.seats;
     // this.selectedSection = section;
+    this.id = transaction.id;
+    this.description = transaction.description;
+      this.merchant  = transaction.merchant;
+      this.amount = transaction.amount;
+      this.date = transaction.date;
+        this.category = transaction.category;
+    //
+    // <td > {{transaction.id}}</td>
+    // <td > {{transaction.description}}</td>
+    // <td > {{transaction.merchant}}</td>
+    // <td > {{transaction.amount}}</td>
+    // <td > {{transaction.date}}</td>
+    // <td > {{transaction.category}}</td>
   }
 
   logout() {
     // this.userservice
     //   .logout()
     //   .then(() =>
-    //     this.router.navigate(['login']));
+        this.router.navigate(['login']) ;
 
   }
 
   ngOnInit() {
+    // this.loadTransactions();
   }
 
 }

@@ -7,7 +7,18 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin",
+        // "https://gentle-castle-56532.herokuapp.com");
+   "http://localhost:4200");
 
+    res.header("Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Authorization, Accept");
+    res.header("Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+});
 app.route('/').get(function (req, res) {
     res.send('Basic auth app')
 });
