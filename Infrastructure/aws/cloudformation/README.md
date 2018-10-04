@@ -7,3 +7,5 @@ To terminate a stack
 2) bash csye6225-aws-cf-terminate-stack <stackname>
 
 Note:[<> should not be included]
+
+
