@@ -1,0 +1,59 @@
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+      integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+      crossorigin="anonymous">
+<div class="container">
+  <h1 id="title">Transactions</h1>
+  <table class="table table-hover">
+    <thead>
+    <tr id ="wbdv-table-heading">
+      <th>id</th>
+      <th>description</th>
+      <th>merchant</th>
+      <th>amount</th>
+      <th>date</th>
+      <th>category</th>
+      <th></th>
+    </tr>
+    <tr >
+      <td><input [(ngModel)]="id" class="form-control"
+                 placeholder="Name of Section" disabled/></td>
+      <td><input [(ngModel)]="description"  class="form-control"
+                 placeholder="ex: coffee" /></td>
+      <td><input [(ngModel)]="merchant"  class="form-control"
+                 placeholder="ex: starbucks" /></td>
+      <td><input [(ngModel)]="amount"  class="form-control"
+                 placeholder="ex: 2.69" /></td>
+      <td><input [(ngModel)]="date"  class="form-control"
+                 placeholder="ex: 09/25/2018" /></td>
+      <td><input [(ngModel)]="category"  class="form-control"
+                 placeholder="ex: food" /></td>
+      <td><span class="float-right" style="white-space: nowrap">
+							 <i class="fa-2x fa fa-plus "  (click)="createTransaction()"></i>
+              <i class="fa-2x fa fa-check wbdv-update" (click)="updateTransaction()"></i>
+					</span></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let transaction of transactions"  >
+      <td > {{transaction.id}}</td>
+      <td > {{transaction.description}}</td>
+      <td > {{transaction.merchant}}</td>
+      <td > {{transaction.amount}}</td>
+      <td > {{transaction.date}}</td>
+      <td > {{transaction.category}}</td>
+      <td ><span class="float-right"> <i
+        class="fa-2x fa fa-minus-circle " (click)="deleteTransaction(transaction.id)" ></i>
+        <i
+          class="fa-2x fa fa-edit"  (click)="editTransaction(transaction)"></i>
+					</span></td>
+    </tr>
+
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+</div>
+<div>
+  <a (click)="logout()" class="btn btn-lg btn-warning margin"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;Logout</a> &nbsp;
+  <!--<a routerLink="/admin-prof" class="btn btn-lg btn-dark margin"><i class="fa fa-user"></i>&nbsp;View Profile</a> &nbsp;-->
+</div>
