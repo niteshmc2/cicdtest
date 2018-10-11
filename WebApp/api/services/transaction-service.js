@@ -1,48 +1,39 @@
 'use strict';
-const db = require('../db');
+const Transaction = require('../models/transaction');
 
 exports.list = function (username, callback){
-    let sql = `select id, description, merchant, amount, date, category from transactions where userid = "${username}"`;
-    db.query(sql, (err, result)=>{
-        callback(err, result);
-    })
+    Transaction.findAll({attributes: ['id', 'description', 'merchant','amount', 'date', 'category'],
+                         where: { userid: username } })
+               .then(result => callback('',result))
+               .catch(err => callback(err));
 }
 
 exports.add = function (transaction, callback){
-    let sql = 'INSERT INTO transactions SET ?';
-    db.query(sql, transaction, (err, result)=>{
-        callback(err, result);  
-    })
+    Transaction.create(transaction)
+               .then(() => callback())
+               .catch(err => callback(err))
 }
 
 exports.search = function (id, callback){
-    let sql = `select * from transactions where id = "${id}"`;
-    console.log(sql);
-    db.query(sql, (err, result)=>{
-        console.log("Service res "+result);
-        callback(err, result);
+    Transaction.findAll({
+        where: { id: id }
     })
+        .then(result => callback('', result))
+        .catch(err => callback(err));
 }
 
-exports.update = function (id, updatedTr, callback){
-    let sql = "update transactions set";
-    for (var key in updatedTr) {
-        if (updatedTr.hasOwnProperty(key)) {
-            sql = sql + " " + key + "=" + "'" + updatedTr[key]+ "'" + ",";
-        }
-    }
-    sql = sql.substring(0, sql.lastIndexOf(","));
-    sql = sql + " where id = " + "'" + id + "'";
-    console.log("Capre diem!  ++++++++  ------------  +++++++\n"+sql);
-    db.query(sql, (err, result) => {
-        callback(err, result);
-    })
+exports.update = function ( updatedTr, callback){
+        Transaction.update(updatedTr, {
+            where: { id: updatedTr.id }
+        })
+            .then(() => callback())
+            .catch(err => callback(err));
 }
 
 
 exports.delete = function (id, callback){
-    let sql = `delete from transactions where id="${id}"`;
-    db.query(sql, (err, result) => {
-        callback(err, result);
-    })
+    Transaction.destroy({
+        where: { id: id }
+    }).then(()=>callback())
+    .catch(err => callback(err));
 }
