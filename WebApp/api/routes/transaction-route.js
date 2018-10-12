@@ -12,7 +12,8 @@ module.exports = function(app){
     function verify(req, res, next) {
         const bearerHead = req.headers['authorization'];
         if (bearerHead == undefined) {
-            res.status(403).send('User not logged in');
+            console.log('Hack ');
+            res.status(403).json({sc:403,status:'User not logged in'});
         } else {
             // req.token = bearerHead;
             next();

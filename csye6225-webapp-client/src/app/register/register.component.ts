@@ -27,11 +27,17 @@ export class RegisterComponent implements OnInit {
     //       alert("Username already exists");
     //     }
         else {
-          this.service
-            .createUser(username, password)
-            .then(() =>
-              this.router.navigate(['transactions']));
-        }
+      this.service
+        .createUser(username, password)
+        .then(res => {
+          if (res.sc == 201) {
+            // alert(res.login);
+            this.router.navigate(['transactions']);
+          } else {
+            alert('Enter Correct Credentials');
+          }
+        });
+    }
       // });
   }
 
