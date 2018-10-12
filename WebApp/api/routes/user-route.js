@@ -1,7 +1,6 @@
 'use strict';
 module.exports = function (app) {
     const userController = require('../controllers/user-controller');
-
     app.route('/time').get(verify, userController.time);
     app.route('/user/register').post(userController.register);
 

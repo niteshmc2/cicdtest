@@ -30,4 +30,3 @@ initApp(app);
 app.listen('3001', () => {
     console.log("Started server on port 3001");
 })
-
