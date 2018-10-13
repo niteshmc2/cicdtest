@@ -127,7 +127,7 @@
       "Type" : "AWS::S3::Bucket",
       "Properties" : {
         "AccessControl" :"PublicRead",
-        "BucketName" : "csye6225-fall2018-sajeea.me.csye6225.com",
+        "BucketName" : "csye6225-fall2018-icarus.me.csye6225.com",
         "VersioningConfiguration" :{"Status":"Suspended"},
         "Tags" : [{ "Key" : "Name", "Value" :{"Fn::Sub":"${AWS::StackName}-csye6225-S3Bucket"}}]
       }

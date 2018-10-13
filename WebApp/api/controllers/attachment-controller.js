@@ -4,9 +4,20 @@ const userService = require('../services/user-service');
 const attachmentService = require('../services/attachment-service');
 const uuidv1 = require('uuid/v1');
 const bcrypt = require('bcryptjs');
+const directory = '/home/yogeshsuresh/server/';
+var AWS = require('aws-sdk');
+var s3 = new AWS.S3();
+//set env
+var myBucket = 'csye6225-fall2018-icarus.me.csye6225.com';
+var myKey = 'myBucketKey';
+const s3Directory = 'https://s3.amazonaws.com/' + myBucket + '/';
 
+   if (process.env.NODENV === 'dev')
+       var localProfile = false;
+   else
+       var localProfile = true;
 
-
+   console.log('Profile loaded' + localProfile);
 exports.list = function(req, res){
     var auth = req.headers['authorization'];
     var tmp = auth.split(' ');
@@ -80,7 +91,11 @@ exports.add = function(req, res){
                             return res.status(400).json({ error: "file not found", status: 'fail' });
                         let sampleFile = req.files.sampleFile;
                         console.log(sampleFile);
-                        const URL ='C:\\Users\\yoges\\Desktop\\server\\' + sampleFile.name;
+                        if(!localProfile) {
+                            var URL = directory + sampleFile.name;
+                        }
+                        else
+                            var URL = s3Directory + sampleFile.name;
                         let attachid = uuidv1();
                         let updatedTr = {
                             id: req.params.id,
@@ -102,12 +117,49 @@ exports.add = function(req, res){
                                     res.status(400).json({sc: 400, status: "Bad request"});
                                     return;
                                 }
-                                sampleFile.mv(URL, function(err) {
-                                    if (err)
-                                        return res.status(500).send(err);
-                                    res.status(200).json({ message: "File uploaded", status: 'success' });
-                                });
-                                // res.status(201).json({ sc: 201, status: "Created/Updated - Invalid keys, if passed will be ignored" });
+                                if(!localProfile) {
+                                    sampleFile.mv(URL, function (err) {
+                                        if (err)
+                                            return res.status(500).send(err);
+                                        res.status(200).json({message: "File uploaded", status: 'success'});
+                                    });
+                                }else {
+                                        console.log('inside check');
+                                        s3.createBucket({Bucket: myBucket}, function(err, data) {
+
+                                            if (err) {
+
+                                                console.log(err);
+
+                                            } else {
+
+                                                var params = {Bucket: myBucket, Key: sampleFile.name, Body: sampleFile.data};
+                                                // s3.upload
+                                                s3.upload(params, function(err, data) {
+
+                                                    if (err) {
+
+                                                        console.log(err)
+
+                                                    } else {
+
+                                                        console.log("Successfully uploaded data to myBucket/myKey");
+                                                        res.status(200).json({message: "File uploaded to S3", status: 'success'});
+
+                                                    }
+
+                                                });
+
+                                            }
+
+                                        });
+                                    }
+
+                                    // res.status(201).json({
+                                    //     sc: 201,
+                                    //     status: "Created/Updated - Invalid keys, if passed will be ignored"
+                                    // });
+
                             })
 
                         })
@@ -155,23 +207,75 @@ exports.update = function(req, res){
                             return res.status(400).json({ error: "file not found", status: 'fail' });
                         let sampleFile = req.files.sampleFile;
                         // console.log(sampleFile);
-                        const URL ='C:\\Users\\yoges\\Desktop\\server\\' + sampleFile.name;
+                        if(!localProfile) {
+                            var URL = directory + sampleFile.name;
+                        }
+                        else
+                            var URL = s3Directory + sampleFile.name;
                         let updatedAttmt = {
                             id: req.params['idAttachments'],
                             url: URL
                         };
-                        sampleFile.mv(URL, function(err) {
-                            if (err)
-                                return res.status(500).send(err);
-                            // res.status(200).json({ message: "File uploaded", status: 'success' });
-                        });
+                        // sampleFile.mv(URL, function(err) {
+                        //     if (err)
+                        //         return res.status(500).send(err);
+                        //     // res.status(200).json({ message: "File uploaded", status: 'success' });
+                        // });
                         attachmentService.update( updatedAttmt, (err) => {
                             if (err) {
                                 console.log(err);
                                 res.status(400).json({ sc: 400, status: "Bad request" });
                                 return;
+                            }else {
+                                if (!localProfile) {
+                                    sampleFile.mv(URL, function (err) {
+                                        if (err)
+                                            return res.status(500).send(err);
+                                        res.status(200).json({message: "File uploaded", status: 'success'});
+                                    });
+                                } else {
+                                    console.log('inside update');
+                                    s3.createBucket({Bucket: myBucket}, function (err, data) {
+
+                                        if (err) {
+
+                                            console.log(err);
+
+                                        } else {
+
+                                            var params = {
+                                                Bucket: myBucket,
+                                                Key: sampleFile.name,
+                                                Body: sampleFile.data
+                                            };
+                                            // s3.upload
+                                            s3.upload(params, function (err, data) {
+
+                                                if (err) {
+
+                                                    console.log(err)
+
+                                                } else {
+
+                                                    console.log("Successfully uploaded data to myBucket/myKey");
+                                                    res.status(200).json({
+                                                        message: "File uploaded to S3",
+                                                        status: 'success'
+                                                    });
+
+                                                }
+
+                                            });
+
+                                        }
+
+                                    });
+                                }
+                                // res.status(201).json({
+                                //     sc: 201,
+                                //     status: "File Updated - Invalid keys, if passed will be ignored"
+                                // });
                             }
-                            res.status(201).json({ sc: 201, status: "File Updated - Invalid keys, if passed will be ignored" });
                         })
                     } else
                         res.status(401).send("Unauthorized");
@@ -232,14 +336,37 @@ exports.delete = function(req, res){
                                 else {
                                     URL = result[0].url;
                                     console.log(URL);
+                                    console.log('inside delete');
+                                    var tmp = URL.split('/');
+                                    console.log(tmp[4]);
+                                    var params = {Bucket: myBucket, Key: tmp[4] };
+                                    s3.deleteObject(params, function(err, data){
+                                    // s3.delete({Bucket: myBucket}, function(err, data) {
 
-                                    attachmentService.delete(attachId, (err) => {
                                         if (err) {
+
                                             console.log(err);
-                                            res.status(400).json({sc: 400, status: "DB err"});
+
+                                        } else {
+                                            attachmentService.delete(attachId, (err) => {
+                                                if (err) {
+                                                    console.log(err);
+                                                    res.status(400).json({sc: 400, status: "DB err"});
+                                                }
+                                                res.status(200).json('No content');
+                                            })
+
+
                                         }
-                                        res.status(200).json('No content');
-                                    })
+
+                                    });
+                                    // attachmentService.delete(attachId, (err) => {
+                                    //     if (err) {
+                                    //         console.log(err);
+                                    //         res.status(400).json({sc: 400, status: "DB err"});
+                                    //     }
+                                    //     res.status(200).json('No content');
+                                    // })
                                 }
                             })
                         })
