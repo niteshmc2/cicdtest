@@ -30,7 +30,13 @@ const Transaction = sequelize.define('transactions', {
     userid: {
         type: Sequelize.STRING,
         allowNull: false
+    },
+    attachmentid: {
+        type : Sequelize.STRING,
+        allowNull: true
     }
+
+
 })
 
 Transaction.sync()

@@ -8,6 +8,13 @@ exports.list = function (username, callback){
                .catch(err => callback(err));
 }
 
+exports.listOne = function (transId, callback){
+    Transaction.findAll({attributes: ['attachmentid'],
+        where: { id: transId } })
+        .then(result => callback('',result))
+        .catch(err => callback(err));
+}
+
 exports.add = function (transaction, callback){
     Transaction.create(transaction)
                .then(() => callback())

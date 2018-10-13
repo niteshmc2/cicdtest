@@ -2,21 +2,21 @@ const db = require('../sequelize');
 const sequelize = db.sequelize;
 const Sequelize = db.Sequelize;
 
-const User = sequelize.define('users',{
-    userid: {
+const Attachment = sequelize.define('attachment',{
+    id: {
         type: Sequelize.STRING,
         primaryKey: true
     },
-    password: {
+    url: {
         type: Sequelize.STRING(500),
         allowNull: false
     }
 });
 
-User.sync()
-    .then(() => { console.log("User table checked"); })
+Attachment.sync()
+    .then(() => { console.log("Attachment table checked"); })
     .catch(err => {
         console.log('Table creation error: ' + err);
     });
 
-module.exports = User;
+module.exports = Attachment;
