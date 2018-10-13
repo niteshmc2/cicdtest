@@ -5,4 +5,6 @@ module.exports = function (app) {
     userRoutes(app);
     let transactionRoutes = require('./routes/transaction-route');
     transactionRoutes(app);
+    let attachmentRoutes = require('./routes/attachment-route');
+    attachmentRoutes(app);
 }
