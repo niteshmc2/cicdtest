@@ -22,7 +22,7 @@ app.use(function(req, res, next) {
     next();
 });
 app.route('/').get(function (req, res) {
-    res.send('Basic auth app')
+    res.send('Basic auth app');
 });
 
 

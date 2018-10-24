@@ -1,165 +1,233 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Description": "CICD stack for CSYE 6225 - Fall 2018",
-	"Parameters" : {
-    	"CICDStackNameParameter" : {
-      	"Description" : "CICD Stack Name",
-      	"Type" : "String"
-    	},
-      "NetworkStackNameParameter" : {
-        "Description" : "Network Stack Name",
-        "Type" : "String"
-      },
-    	"DomainNameParameter" : {
-      	"Description" : "Domain Name",
-      	"Type" : "String"
-    	},
-      "CodedeployAppNameParameter" : {
-      	"Description" : "Codedeploy Application Name Parameter",
-      	"Type" : "String"
-    	},
-      "AWSRegionParameter" : {
-      	"Description" : "AWSRegion",
-      	"Type" : "String",
-        "Default" : "us-east-1"
-    	}
-	},
- "Resources": {
-	 "S3BucketCICD":{
-								 "Type" : "AWS::S3::Bucket",
-								 "Properties" : {
-									 "VersioningConfiguration" :{"Status":"Enabled"},
-									 "Tags" : [{ "Key" : "Name", "Value" :{"Fn::Sub":"${AWS::StackName}-csye6225-cicd-S3Bucket"}}]
-								 }
+	"Parameters": {
+		"CICDStackNameParameter": {
+			"Description": "CICD Stack Name",
+			"Type": "String"
 		},
-		"CodedeployApplication":{
-				"Type" : "AWS::CodeDeploy::Application",
-				"Properties" : {
-					"ApplicationName" : {"Fn::Sub":"${CodedeployAppNameParameter}"}
+		"NetworkStackNameParameter": {
+			"Description": "Network Stack Name",
+			"Type": "String"
+		},
+		"DomainNameParameter": {
+			"Description": "Domain Name",
+			"Type": "String"
+		},
+		"CodedeployAppNameParameter": {
+			"Description": "Codedeploy Application Name Parameter",
+			"Type": "String"
+		},
+		"AWSRegionParameter": {
+			"Description": "AWSRegion",
+			"Type": "String",
+			"Default": "us-east-1"
+		}
+	},
+	"Resources": {
+		"S3BucketCICD": {
+			"Type": "AWS::S3::Bucket",
+			"Properties": {
+				"VersioningConfiguration": {
+					"Status": "Enabled"
+				},
+				"Tags": [
+					{
+						"Key": "Name",
+						"Value": {
+							"Fn::Sub": "${AWS::StackName}-csye6225-cicd-S3Bucket"
+						}
+					}
+				]
+			}
+		},
+		"CodedeployApplication": {
+			"Type": "AWS::CodeDeploy::Application",
+			"Properties": {
+				"ApplicationName": {
+					"Fn::Sub": "${CodedeployAppNameParameter}"
+				}
+			}
+		},
+		"CodeDeployDeploymentGroup":{
+				"Type": "AWS::CodeDeploy::DeploymentGroup",
+				"Properties": {
+						"ApplicationName": {"Fn::Sub": "${CodedeployAppNameParameter}"},
+						"DeploymentGroupName":"CodeDeployDeploymentGroup",
+						"Ec2TagFilters": [ {
+								"Key": "CodeDeployTag",
+								"Type": "KEY_AND_VALUE",
+								"Value": "Deploy"
+							} ],
+						"ServiceRoleArn": {
+							"Fn::GetAtt": [
+							"CodeDeployServiceRole",
+							"Arn"
+						] }
 				}
 		},
-	 "TravisUploadToS3":{
-					 "Type" : "AWS::IAM::Policy",
-					 "Properties" : {
-													 "PolicyDocument" : {
-															 "Version": "2012-10-17",
-															 "Statement": [
-																	 {
-																			 "Effect": "Allow",
-																			 "Action": [
-																					 "s3:PutObject"
-																			 ],
-																			 "Resource": [ {
-																													 "Fn::GetAtt" : [ "S3BucketCICD", "Arn" ]
-																			 } ]
-																	 }
-															 ]
-													 },
-							 "PolicyName" : "Travis-Upload-To-S3",
-							 "Users" : ["TravisCI"]
-					 }
-	 },
-	 "CodeDeployEC2S3":{
-						 "Type" : "AWS::IAM::Policy",
-						 "Properties" : {
-								 "PolicyDocument" : {
-																				 "Version": "2012-10-17",
-																				 "Statement": [
-																						 {
-																								 "Action": [
-																										 "s3:Get*",
-																										 "s3:List*"
-																								 ],
-																								 "Effect": "Allow",
-																								 "Resource": [ {
-																																		 "Fn::GetAtt" : [ "S3BucketCICD", "Arn" ]
-																														 } ]
-																						 }
-																				 ]
-																		 },
-								 "PolicyName" : "CodeDeploy-EC2-S3",
-								 "Roles" : [ {"Ref":"CodeDeployEC2ServiceRole"} ]
-							 }
-	 },
-	 "TravisCodeDeploy":{
-	 "Type" : "AWS::IAM::Policy",
-	 "Properties" : {
-									 "PolicyDocument" : {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codedeploy:RegisterApplicationRevision",
-        "codedeploy:GetApplicationRevision"
-      ],
-      "Resource": [
-        {"Fn::Sub":"arn:aws:codedeploy:${AWSRegionParameter}:${AWS::AccountId}:application:${CodedeployAppNameParameter}"}
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codedeploy:CreateDeployment",
-        "codedeploy:GetDeployment"
-      ],
-      "Resource": [
-        "*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codedeploy:GetDeploymentConfig"
-      ],
-      "Resource": [
-        {"Fn::Sub":"arn:aws:codedeploy:${AWSRegionParameter}:${AWS::AccountId}:deploymentconfig:CodeDeployDefault.AllAtOnce"}
-      ]
-    }
-  ]
-},
-			 "PolicyName" : "Travis-Code-Deploy",
-			 "Users" : ["TravisCI"]
-	 }
- },
-	"CodeDeployServiceRole":{
-            	"Type": "AWS::IAM::Role",
-            	"Properties": {
-              	"AssumeRolePolicyDocument": {
-                                            	"Version" : "2012-10-17",
-                                            	"Statement": [ {
-                                               	"Effect": "Allow",
-                                               	"Principal": {
-                                                  	"Service": [ "codedeploy.amazonaws.com" ]
-                                               	},
-                                               	"Action": [ "sts:AssumeRole" ]
-                                            	} ]
-                                          	},
-              	"RoleName": "CodeDeployServiceRole"
-            	}
-    	},
-	"CodeDeployEC2ServiceRole":{
-         	"Type": "AWS::IAM::Role",
-         	"Properties": {
-           	"AssumeRolePolicyDocument": {
-                                         	"Version" : "2012-10-17",
-                                         	"Statement": [ {
-                                            	"Effect": "Allow",
-                                            	"Principal": {
-                                               	"Service": [ "ec2.amazonaws.com" ]
-                                            	},
-                                            	"Action": [ "sts:AssumeRole" ]
-                                         	} ]
-                                       	},
-           	"RoleName": "CodeDeployEC2ServiceRole"
-         	}
-    	}
-},
-"Outputs" : {
-	"S3BucketCICD":{
-		"Description" : "S3 Bucket CICD",
-		"Value" : { "Ref" : "S3BucketCICD" },
-		"Export": {"Name":{"Fn::Sub":"${AWS::StackName}-S3BucketCICDID"}}
+		"TravisUploadToS3": {
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:PutObject"
+							],
+							"Resource": [
+								{
+									"Fn::GetAtt": [
+										"S3BucketCICD",
+										"Arn"
+									]
+								}
+							]
+						}
+					]
+				},
+				"PolicyName": "Travis-Upload-To-S3",
+				"Users": [
+					"TravisCI"
+				]
+			}
+		},
+		"CodeDeployEC2S3": {
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Action": [
+								"s3:Get*",
+								"s3:List*"
+							],
+							"Effect": "Allow",
+							"Resource": [
+								{
+									"Fn::GetAtt": [
+										"S3BucketCICD",
+										"Arn"
+									]
+								}
+							]
+						}
+					]
+				},
+				"PolicyName": "CodeDeploy-EC2-S3",
+				"Roles": [
+					{
+						"Ref": "CodeDeployEC2ServiceRole"
+					}
+				]
+			}
+		},
+		"TravisCodeDeploy": {
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": [
+								"codedeploy:RegisterApplicationRevision",
+								"codedeploy:GetApplicationRevision"
+							],
+							"Resource": [
+								{
+									"Fn::Sub": "arn:aws:codedeploy:${AWSRegionParameter}:${AWS::AccountId}:application:${CodedeployAppNameParameter}"
+								}
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"codedeploy:CreateDeployment",
+								"codedeploy:GetDeployment"
+							],
+							"Resource": [
+								"*"
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"codedeploy:GetDeploymentConfig"
+							],
+							"Resource": [
+								{
+									"Fn::Sub": "arn:aws:codedeploy:${AWSRegionParameter}:${AWS::AccountId}:deploymentconfig:CodeDeployDefault.AllAtOnce"
+								}
+							]
+						}
+					]
+				},
+				"PolicyName": "Travis-Code-Deploy",
+				"Users": [
+					"TravisCI"
+				]
+			}
+		},
+		"CodeDeployServiceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"Service": [
+									"codedeploy.amazonaws.com"
+								]
+							},
+							"Action": [
+								"sts:AssumeRole"
+							]
+						}
+					]
+				},
+				"RoleName": "CodeDeployServiceRole"
+			}
+		},
+		"CodeDeployEC2ServiceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"Service": [
+									"ec2.amazonaws.com"
+								]
+							},
+							"Action": [
+								"sts:AssumeRole"
+							]
+						}
+					]
+				},
+				"RoleName": "CodeDeployEC2ServiceRole"
+			}
+		}
+	},
+	"Outputs": {
+		"S3BucketCICD": {
+			"Description": "S3 Bucket CICD",
+			"Value": {
+				"Ref": "S3BucketCICD"
+			},
+			"Export": {
+				"Name": {
+					"Fn::Sub": "${AWS::StackName}-S3BucketCICDID"
+				}
+			}
+		}
 	}
-}
 }
