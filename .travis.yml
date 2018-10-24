@@ -11,6 +11,7 @@ script:
   - pwd
   - cd WebApp
   - pwd
+  - npm install mocha
   - npm test
   - echo $?
   - cd ..
