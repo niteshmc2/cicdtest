@@ -34,6 +34,7 @@
                 "#!/bin/bash -xe ",
                 "curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -",
                 "yum -y install nodejs",
+                "cd /home/centos",
                 "touch .env",
                 {
                   "Fn::Join": [
@@ -56,13 +57,13 @@
                 "echo $RDS_PASSWORD >> .env",
                 "export RDS_PORT=3306",
                 "echo $RDS_PORT >> .env",
-                "sudo yum update",
-                "sudo yum install ruby",
-                "sudo yum install wget",
+                "yum -y update",
+                "yum -y install ruby",
+                "yum -y install wget",
                 "cd /home/centos",
                 "wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install",
                 "chmod +x ./install",
-                "sudo ./install auto"
+                "./install auto"
               ]
             ]
           }
