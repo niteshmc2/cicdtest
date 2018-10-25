@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: ./ROOT.tar.gz
-    destination: /centos/home
+    destination: /home/centos
 
 hooks:
   AfterInstall:
