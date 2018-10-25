@@ -1,0 +1,20 @@
+version: 0.0
+os: linux
+
+files:
+  - source: ./ROOT.tar.gz
+    destination: ~
+
+hooks:
+  AfterInstall:
+   - location: ./afterInstall.sh
+     timeout: 180
+     runas: centos
+  ApplicationStart:
+   - location: ./applicationStart.sh
+     timeout: 180
+     runas: centos
+# ValidateService:
+#  - location: ./validateService.sh
+#    timeout: 180
+#    runas: centos
