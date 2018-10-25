@@ -74,10 +74,7 @@
 							],
 							"Resource": [
 								{
-									"Fn::GetAtt": [
-										"S3BucketCICD",
-										"Arn"
-									]
+									"Fn::Sub": "arn:aws:s3:::code-deploy.${DomainNameParameter}/*"
 								}
 							]
 						}
@@ -103,10 +100,7 @@
 							"Effect": "Allow",
 							"Resource": [
 								{
-									"Fn::GetAtt": [
-										"S3BucketCICD",
-										"Arn"
-									]
+									"Fn::Sub": "arn:aws:s3:::code-deploy.${DomainNameParameter}"
 								}
 							]
 						}
