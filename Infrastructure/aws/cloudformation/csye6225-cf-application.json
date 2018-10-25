@@ -25,6 +25,7 @@
         "KeyName": {
           "Ref": "KeyName"
         },
+        "IamInstanceProfile": "EC2InstanceProfile",
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -33,6 +34,7 @@
                 "#!/bin/bash -xe ",
                 "curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -",
                 "yum -y install nodejs",
+                "touch .env",
                 {
                   "Fn::Join": [
                     "",
@@ -43,14 +45,17 @@
                           "RDSInstance",
                           "Endpoint.Address"
                         ]
-                      },
-                      " >> /etc/profile"
+                      }
                     ]
                   ]
                 },
-                "export RDS_USERNAME=csye6225master >> /etc/profile",
-                "export RDS_PASSWORD=csye6225password >> /etc/profile",
-                "export RDS_PORT=3306 >> /etc/profile",
+                "echo $RDS_HOSTNAME >> .env",
+                "export RDS_USERNAME=csye6225master",
+                "echo $RDS_USERNAME >> .env",
+                "export RDS_PASSWORD=csye6225password",
+                "echo $RDS_PASSWORD >> .env",
+                "export RDS_PORT=3306",
+                "echo $RDS_PORT >> .env",
                 "sudo yum update",
                 "sudo yum install ruby",
                 "sudo yum install wget",

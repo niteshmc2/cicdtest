@@ -2,6 +2,12 @@
 
 pwd
 
+export RDS_HOSTNAME=`sed -n '1p' .env`
+export RDS_USERNAME=`sed -n '2p' .env`
+export RDS_PASSWORD=`sed -n '3p' .env`
+export RDS_PORT=`sed -n '4p' .env`
+
+
 cd WebApp
 
 pwd
