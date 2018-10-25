@@ -17,6 +17,15 @@ then
 fi
 echo "$networkStackName"
 
+echo "Please enter an active keyPair to associate with EC2:"
+read keyName
+if [ -z "$keyName" ]
+then
+	echo "StackName error exiting!"
+	exit 1
+fi
+echo "$keyName"
+
 # Create CloudFormation Stack
 echo "Validating template"
 TMP_code=`aws cloudformation validate-template --template-body file://./csye6225-cf-application.json`
@@ -29,7 +38,7 @@ echo "Cloudformation template validation success"
 
 echo "Now Creating CloudFormation Stack"
 
-CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=$networkStackName ParameterKey=ApplicationStackNameParameter,ParameterValue=$appStackName`
+CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=$networkStackName ParameterKey=ApplicationStackNameParameter,ParameterValue=$appStackName ParameterKey=KeyName,ParameterValue=$keyName`
 if [ -z "$CRTSTACK_Code" ]
 then
 	echo "Stack Creation error exiting!"

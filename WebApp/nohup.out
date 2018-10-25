@@ -1,0 +1,52 @@
+Profile loadedtrue
+Started server on port 3001
+DB checked
+Executing (default): SELECT 1+1 AS result
+Executing (default): CREATE TABLE IF NOT EXISTS `users` (`userid` VARCHAR(255) , `password` VARCHAR(500) NOT NULL, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`userid`)) ENGINE=InnoDB;
+Executing (default): CREATE TABLE IF NOT EXISTS `transactions` (`id` VARCHAR(255) , `description` VARCHAR(1500) NOT NULL, `merchant` VARCHAR(255) NOT NULL, `amount` VARCHAR(255) NOT NULL, `date` VARCHAR(255) NOT NULL, `category` VARCHAR(255) NOT NULL, `userid` VARCHAR(255) NOT NULL, `attachmentid` VARCHAR(255), `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+Executing (default): CREATE TABLE IF NOT EXISTS `attachments` (`id` VARCHAR(255) , `url` VARCHAR(500) NOT NULL, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+Sequelize Connection has been established successfully.
+Executing (default): SHOW INDEX FROM `users`
+Executing (default): SHOW INDEX FROM `transactions`
+Executing (default): SHOW INDEX FROM `attachments`
+Attachment table checked
+Transactions table checked
+User table checked
+Profile loadedtrue
+events.js:183
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE :::3001
+    at Server.setupListenHandle [as _listen2] (net.js:1360:14)
+    at listenInCluster (net.js:1401:12)
+    at Server.listen (net.js:1485:7)
+    at Function.listen (/home/nitesh/Documents/CSYE6225/CICDTest/csye6225-fall2018/WebApp/node_modules/express/lib/application.js:618:24)
+    at Object.<anonymous> (/home/nitesh/Documents/CSYE6225/CICDTest/csye6225-fall2018/WebApp/server.js:32:5)
+    at Module._compile (module.js:653:30)
+    at Object.Module._extensions..js (module.js:664:10)
+    at Module.load (module.js:566:32)
+    at tryModuleLoad (module.js:506:12)
+    at Function.Module._load (module.js:498:3)
+    at Function.Module.runMain (module.js:694:10)
+    at startup (bootstrap_node.js:204:16)
+    at bootstrap_node.js:625:3
+Profile loadedtrue
+events.js:183
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE :::3001
+    at Server.setupListenHandle [as _listen2] (net.js:1360:14)
+    at listenInCluster (net.js:1401:12)
+    at Server.listen (net.js:1485:7)
+    at Function.listen (/home/nitesh/Documents/CSYE6225/CICDTest/csye6225-fall2018/WebApp/node_modules/express/lib/application.js:618:24)
+    at Object.<anonymous> (/home/nitesh/Documents/CSYE6225/CICDTest/csye6225-fall2018/WebApp/server.js:32:5)
+    at Module._compile (module.js:653:30)
+    at Object.Module._extensions..js (module.js:664:10)
+    at Module.load (module.js:566:32)
+    at tryModuleLoad (module.js:506:12)
+    at Function.Module._load (module.js:498:3)
+    at Function.Module.runMain (module.js:694:10)
+    at startup (bootstrap_node.js:204:16)
+    at bootstrap_node.js:625:3

@@ -29,16 +29,11 @@
 			"Type": "AWS::S3::Bucket",
 			"Properties": {
 				"VersioningConfiguration": {
-					"Status": "Enabled"
+					"Status": "Suspended"
 				},
-				"Tags": [
-					{
-						"Key": "Name",
-						"Value": {
-							"Fn::Sub": "${AWS::StackName}-csye6225-cicd-S3Bucket"
-						}
+				"BucketName" : {
+						"Fn::Sub": "code-deploy.${DomainNameParameter}"
 					}
-				]
 			}
 		},
 		"CodedeployApplication": {
@@ -53,7 +48,7 @@
 				"Type": "AWS::CodeDeploy::DeploymentGroup",
 				"Properties": {
 						"ApplicationName": {"Fn::Sub": "${CodedeployAppNameParameter}"},
-						"DeploymentGroupName":"CodeDeployDeploymentGroup",
+						"DeploymentGroupName":{"Fn::Sub": "${CodedeployAppNameParameter}"},
 						"Ec2TagFilters": [ {
 								"Key": "CodeDeployTag",
 								"Type": "KEY_AND_VALUE",

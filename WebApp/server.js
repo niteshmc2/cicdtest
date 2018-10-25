@@ -29,6 +29,6 @@ app.route('/').get(function (req, res) {
 let initApp = require('./api/app');
 initApp(app);
 
-app.listen('3001', () => {
+app.listen(3001 ,  () => {
     console.log("Started server on port 3001");
 })

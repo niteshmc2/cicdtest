@@ -12,7 +12,6 @@ script:
   - pwd
   - npm install mocha
   - npm test
-  - echo $?
   - cd ..
   - pwd
   - tar -czf ROOT.tar.gz WebApp
