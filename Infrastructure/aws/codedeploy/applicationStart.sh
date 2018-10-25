@@ -16,4 +16,10 @@ sudo npm install
 
 sudo npm install -g pm2
 
+echo "Check dir"
+
+pwd
+
+pwd 
+
 pm2 start server.js
