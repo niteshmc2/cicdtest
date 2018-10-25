@@ -50,7 +50,14 @@
                 },
                 "export RDS_USERNAME=csye6225master >> /etc/profile",
                 "export RDS_PASSWORD=csye6225password >> /etc/profile",
-                "export RDS_PORT=3306 >> /etc/profile"
+                "export RDS_PORT=3306 >> /etc/profile",
+                "sudo yum update",
+                "sudo yum install ruby",
+                "sudo yum install wget",
+                "cd /home/centos",
+                "wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install",
+                "chmod +x ./install",
+                "sudo ./install auto"
               ]
             ]
           }
