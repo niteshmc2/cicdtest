@@ -106,11 +106,7 @@
 								"s3:List*"
 							],
 							"Effect": "Allow",
-							"Resource": [
-								{
-									"Fn::Sub": "arn:aws:s3:::code-deploy.${DomainNameParameter}"
-								}
-							]
+							"Resource": "*"
 						}
 					]
 				},
